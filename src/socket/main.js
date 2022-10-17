@@ -2,6 +2,8 @@ const { io } = require("../http");
 
 const Users = require("../models/users");
 
+const userBySocket = new Map();
+
 const getUser = (socketId) => Users.find((user) => user.id === socketId);
 
 const getUserIndex = (socketId) =>
@@ -21,6 +23,8 @@ io.on("connection", (socket) => {
   console.log(`A user connected [${socket.id}]`);
 
   Users.push({ id: socket.id });
+
+  userBySocket.set(socket.id, socket);
 
   /**
    * Join in room
@@ -93,5 +97,15 @@ io.on("connection", (socket) => {
 
   socket.on("reset", (data) => {
     socket.to(data.roomId).emit("reseted");
+  });
+
+  /**
+   * remove user
+   */
+  socket.on("remove", (data) => {
+    console.log("[remove]::", data);
+
+    const socketForRemove = userBySocket.get(data.userId);
+    socketForRemove.disconnect();
   });
 });

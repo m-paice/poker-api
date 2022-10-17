@@ -9,7 +9,5 @@ exports.index = () => {
 exports.usersFromRoomId = (roomId) => {
   const response = User.filter((user) => user.roomId === roomId);
 
-  console.log(response);
-
   return response;
 };
